@@ -1,0 +1,259 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Birthday Pu</title>
+    <style>
+      body {
+        margin: 0;
+        padding: 0;
+        font-family: "Arial", sans-serif;
+        background: linear-gradient(135deg, #036891, #2581dd);
+        color: #fff;
+        text-align: center;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+        height: 100vh;
+        overflow: hidden;
+      }
+
+      .welcome,
+      .container,
+      #success {
+        animation: fadeIn 1s ease-in-out;
+      }
+
+      @keyframes fadeIn {
+        from {
+          opacity: 0;
+          transform: translateY(-20px);
+        }
+        to {
+          opacity: 1;
+          transform: translateY(0);
+        }
+      }
+
+      h1 {
+        font-size: 2.5rem;
+        margin-bottom: 20px;
+      }
+
+      input {
+        padding: 10px;
+        font-size: 1rem;
+        border-radius: 5px;
+        border: none;
+        outline: none;
+        margin-bottom: 20px;
+      }
+
+      button {
+        background-color: #71b3f5;
+        border: none;
+        padding: 10px 20px;
+        font-size: 1rem;
+        color: #fff;
+        border-radius: 50px;
+        cursor: pointer;
+        transition: all 0.3s;
+      }
+
+      button:hover {
+        background-color: #5a9;
+      }
+
+      #message {
+        margin-top: 20px;
+        font-size: 1.2rem;
+      }
+
+      .photo-container {
+        display: flex;
+        overflow-x: scroll;
+        gap: 10px;
+        padding: 20px;
+        margin-top: 20px;
+      }
+
+      .photo-container img {
+        max-width: 200px; /* Sesuaikan ukuran maksimal */
+        max-height: 300px; /* Sesuaikan ukuran maksimal */
+        width: 100%;
+        height: auto;
+        border-radius: 10px;
+        box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
+        transition: transform 0.3s;
+      }
+
+      .photo-container img:hover {
+        transform: scale(1.1);
+      }
+
+      .hidden {
+        display: none;
+      }
+
+      .success {
+        font-size: 1.5rem;
+        color: #fff;
+        margin-top: 20px;
+      }
+
+      audio {
+        display: none;
+      }
+
+      .flower {
+        position: fixed;
+        top: -50px;
+        pointer-events: none;
+        animation: fall 10s linear infinite;
+      }
+
+      @keyframes fall {
+        0% {
+          transform: translateX(0) rotate(0deg);
+        }
+        50% {
+          transform: translateX(50vw) rotate(180deg);
+        }
+        100% {
+          transform: translateX(100vw) rotate(360deg);
+          top: 100vh;
+        }
+      }
+
+      canvas {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        pointer-events: none;
+        z-index: 10;
+      }
+    </style>
+  </head>
+  <body>
+    <audio id="bgMusic" loop>
+      <source src="ultah.mp3" type="audio/mpeg" />
+      Your browser does not support the audio element.
+    </audio>
+
+    <div class="welcome">
+      <h1>Selamat Datang My Friend 🎈🎁🎉</h1>
+      <p>Masukkan nama Lengkap kamu dulu ya ni dibawah :</p>
+      <input type="text" id="nameInput" placeholder="Nama Lengkap " />
+      <button onclick="startGame()">Lanjut</button>
+    </div>
+
+    <div class="container hidden">
+      <h1>Halo, <span id="nameDisplay"></span>!</h1>
+      <p>Untuk melihat pesan ulang tahun, jawab teka-teki dulu yaa 😄:</p>
+      <p><b>"Siapa nama lengkapnya jafar ? 😆 "</b></p>
+      <input type="text" id="answerInput" placeholder="Jawabanmu..." />
+      <button onclick="checkAnswer()">Jawab</button>
+      <p id="message"></p>
+    </div>
+
+    <div class="hidden" id="success"></div>
+      <h1>Happy Birthday <span id="nameFinal"></span>! 🎉</h1>
+      <p>"Semoga hari-harimu selalu penuh kebahagiaan dan keberuntungan. Semoga tahun ini membawa lebih banyak tawa, petualangan seru, dan pencapaian luar biasa untukmu. Teruslah jadi pribadi yang luar biasa ! 🎉🎂🎁"</p>
+      <div class="photo-container">
+        <img src="11.jpg" alt="Foto 1" />
+        <img src="12.jpg" alt="Foto 2" />
+        <img src="13.jpg" alt="Foto 3" />
+        <img src="14.jpg" alt="Foto 4" />
+        <img src="1.jpg" alt="Foto 5" />
+        <img src="2.jpg" alt="Foto 6" />
+        <img src="3.jpg" alt="Foto 7" />
+        <img src="4.jpg" alt="Foto 8" />
+        <img src="6.jpg" alt="Foto 9" />
+        <img src="5.jpg" alt="Foto 10" />
+        <img src="9.jpg" alt="Foto 11" />
+        <img src="7.jpg" alt="Foto 12" />
+        <img src="10.jpg" alt="Foto 13" />
+        <img src="8.jpg" alt="Foto 14" />
+      </div>
+      <button onclick="restart()">Main Lagi</button>
+    </div>
+
+    <canvas id="confetti"></canvas>
+
+    <script>
+      const bgMusic = document.getElementById("bgMusic");
+
+      // Memulai musik saat halaman dimuat
+      window.addEventListener("DOMContentLoaded", () => {
+        bgMusic.play();
+      });
+
+      function startGame() {
+        const name = document.getElementById("nameInput").value.trim();
+        if (name) {
+          document.querySelector(".welcome").style.display = "none";
+          document.querySelector(".container").classList.remove("hidden");
+          document.getElementById("nameDisplay").innerText = name;
+        } else {
+          alert("Masukkan nama kamu dulu");
+        }
+      }
+
+      function checkAnswer() {
+        const answer = document.getElementById("answerInput").value.trim().toLowerCase();
+        const correctAnswer = "ahmad ja'far shodiq";
+
+        if (answer === correctAnswer) {
+          document.querySelector(".container").style.display = "none";
+          document.getElementById("success").classList.remove("hidden");
+          const name = document.getElementById("nameDisplay").innerText;
+          document.getElementById("nameFinal").innerText = name;
+          startConfetti();
+        } else {
+          document.getElementById("message").innerText = "Jawaban salah! Cluenya ada tanda petiknya dan spasi";
+          document.getElementById("message").style.color = "#F00";
+        }
+      }
+
+      function restart() {
+        location.reload();
+      }
+
+      function startConfetti() {
+        const canvas = document.getElementById("confetti");
+        const ctx = canvas.getContext("2d");
+        canvas.width = window.innerWidth;
+        canvas.height = window.innerHeight;
+
+        const confettiPieces = Array.from({ length: 300 }).map(() => ({
+          x: Math.random() * canvas.width,
+          y: Math.random() * canvas.height - canvas.height,
+          size: Math.random() * 5 + 2,
+          speed: Math.random() * 3 + 2,
+          angle: Math.random() * Math.PI * 2,
+        }));
+
+        function drawConfetti() {
+          ctx.clearRect(0, 0, canvas.width, canvas.height);
+          confettiPieces.forEach((piece) => {
+            ctx.fillStyle = `hsl(${Math.random() * 360}, 100%, 50%)`;
+            ctx.beginPath();
+            ctx.arc(piece.x, piece.y, piece.size, 0, Math.PI * 2);
+            ctx.fill();
+            piece.y += piece.speed;
+            if (piece.y > canvas.height) {
+              piece.y = -piece.size;
+              piece.x = Math.random() * canvas.width;
+            }
+          });
+          requestAnimationFrame(drawConfetti);
+        }
+        drawConfetti();
+      }
+    </script>
+  </body>
+</html>
